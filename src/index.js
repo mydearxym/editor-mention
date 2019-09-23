@@ -47,18 +47,10 @@ class Mention {
   constructor({ api }) {
     this.api = api;
     /**
-     * Toolbar Button
-     *
-     * @type {HTMLElement|null}
-     */
-    this.button = null;
-
-    /**
      * Tag represented the term
      *
      * @type {string}
      */
-    this.tag = 'MARK';
 
     this.CSS = {
       mentionContainer: 'cdx-mention__container',
@@ -183,130 +175,44 @@ class Mention {
     // this.api.toolbar.close is not work
     // so close the toolbar by remove the optn class mannully
     inlineToolBar.classList.remove(this.CSS.inlineToolBarOpen);
-    console.log('before focus: ', mention);
+    // console.log('before focus: ', mention);
     mention.focus();
-    this.moveCaret(window, 3);
+    this.moveCaretToMentionEnd();
     // mention holder id should be uniq
     // 在 moveCaret 定位以后才可以删除，否则定位会失败
     setTimeout(() => {
       this.removeAllHolderIds();
     }, 50);
-    // move the 'space' next to the mention-holder
-    // otherwise the mention will go forever
-    // 否则会一直是 mention 的输入
   }
 
   /**
    * Create button element for Toolbar
-   *
+   * @ should not visible in toolbar, so return an empty div
    * @return {HTMLElement}
-   */
+  */
   render() {
-    this.button = document.createElement('button');
-    this.button.type = 'button';
-    this.button.classList.add(this.iconClasses.base);
-    this.button.innerHTML = this.toolboxIcon;
+    const emptyDiv = this._make('div', null, {});
 
-    return this.button;
+    return emptyDiv;
   }
 
   /**
-   * Wrap/Unwrap selected fragment
-   *
+   * NOTE:  inline tool must have this method
+   * 
    * @param {Range} range - selected fragment
    */
-  surround(range) {
-    console.log('surround 0');
-
-    // if (!range) {
-    //   return;
-    // }
-
-    // let termWrapper = this.api.selection.findParentTag(this.tag, Mention.CSS);
-
-    // console.log('surround');
-
-    /**
-     * If start or end of selection is in the highlighted block
-     */
-    if (termWrapper) {
-      // this.unwrap(termWrapper);
-    } else {
-      // this.wrap(range);
-    }
-  }
+  surround(range) {}
 
   /**
-   * Wrap selection with term-tag
-   *
-   * @param {Range} range - selected fragment
-   */
-  wrap(range) {
-    console.log('wrap');
-    /**
-     * Create a wrapper for highlighting
-     */
-    let markerIn = document.createElement(this.tag);
-    let marker = this._make('span', 'child', {});
-
-    marker.appendChild(markerIn);
-
-    // markerIn.classList.add(Mention.CSS);
-
-    /**
-     * SurroundContent throws an error if the Range splits a non-Text node with only one of its boundary points
-     * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents}
-     *
-     * // range.surroundContents(span);
-     */
-    markerIn.appendChild(range.extractContents());
-    range.insertNode(marker);
-
-    /**
-     * Expand (add) selection to highlighted block
-     */
-    this.api.selection.expandToTag(marker);
-  }
-
-  /**
-   * Unwrap term-tag
-   *
-   * @param {HTMLElement} termWrapper - term wrapper tag
-   */
-  unwrap(termWrapper) {
-    console.log('unwrap');
-    /**
-     * Expand selection to all term-tag
-     */
-    this.api.selection.expandToTag(termWrapper);
-
-    let sel = window.getSelection();
-    let range = sel.getRangeAt(0);
-
-    let unwrappedContent = range.extractContents();
-
-    /**
-     * Remove empty term-tag
-     */
-    termWrapper.parentNode.removeChild(termWrapper);
-
-    /**
-     * Insert extracted content
-     */
-    range.insertNode(unwrappedContent);
-
-    /**
-     * Restore selection
-     */
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
-  moveCaret(win, charCount) {
+   * move caret to end of current mention 
+   * @return {void}
+   * @private
+  */
+  moveCaretToMentionEnd() {
     var sel, range;
 
-    if (win.getSelection) {
-      sel = win.getSelection();
+    if (window.getSelection) {
+      sel = window.getSelection();
       range = document.createRange();
 
       if (sel.rangeCount > 0) {
@@ -315,54 +221,22 @@ class Mention {
         // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
         const el = document.querySelector('.ce-paragraph');
 
-        console.log('el.childNodes[0]: ', el.childNodes);
         let index = 0;
 
         for (let i = 0; i < el.childNodes.length; i++) {
           const node = el.childNodes[i];
 
-          if(node.id === 'cdx-mention') {
+          if(node.id === this.CSS.mention) {
             index = i;
           }
         }
-        console.log('find index: ', index);
 
+        // console.log('find index: ', index);
         range.setStart(el.childNodes[index + 2], 0);
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
         el.focus();
-
-        // const count = textNode.childElementCount * 2 + 1;
-
-        // console.log('textNode: ', textNode);
-        // console.log('textNode child: ', textNode.childElementCount );
-        // console.log('count: ', count);
-
-        // sel.collapse(textNode,  count);
-        // sel.collapseToEnd();
-      }
-    }
-  }
-
-  moveCaret2(win, charCount) {
-    var sel, range;
-
-    if (win.getSelection) {
-      sel = win.getSelection();
-      if (sel.rangeCount > 0) {
-        // var textNode = sel.focusNode;
-        // debugger;
-        // var textNode = sel.anchorNode.parentNode; // sel.focusNode;
-        const textNode = document.querySelector('.ce-paragraph');
-        const count = textNode.childElementCount * 2 + 1;
-
-        console.log('textNode: ', textNode);
-        console.log('textNode child: ', textNode.childElementCount );
-        console.log('count: ', count);
-
-        sel.collapse(textNode,  count);
-        // sel.collapseToEnd();
       }
     }
   }
@@ -377,8 +251,6 @@ class Mention {
     );
     // const termTag = this.api.selection.findParentTag(this.tag);
 
-    this.button.classList.toggle(this.iconClasses.active, !!termTag);
-
     if (termTag && termTag.id === this.CSS.mention) {
       return this.handleMentionActions();
     }
@@ -386,7 +258,7 @@ class Mention {
   }
 
   handleNormalActions() {
-    console.log('showActions');
+    // console.log('showActions');
     this.mentionContainer.hidden = true;
     let inlineButtons = document.querySelector(
       '.' + this.CSS.inlineToolbarButtons
@@ -459,7 +331,7 @@ class Mention {
   static get sanitize() {
     return {
       mark: {
-        class: Mention.CSS
+        class: this.CSS.mention
       }
     };
   }
@@ -481,4 +353,4 @@ class Mention {
   }
 }
 
-module.exports = Warning
+module.exports = Mention
