@@ -2,6 +2,8 @@
  * Build styles
  */
 
+require('./index.css').toString()
+
 function debounce(func, wait, immediate) {
   var timeout;
 
@@ -478,3 +480,5 @@ class Mention {
     return el;
   }
 }
+
+module.exports = Warning
