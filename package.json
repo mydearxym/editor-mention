@@ -1,0 +1,33 @@
+{
+  "name": "@groupher/editor-mention",
+  "version": "1.0.0",
+  "keywords": [
+    "codex editor",
+    "tool",
+    "code",
+    "editor.js",
+    "editorjs"
+  ],
+  "description": "Mention Tool for Editor.js",
+  "license": "MIT",
+  "repository": "https://github.com/groupher/editor-mention",
+  "main": "./dist/bundle.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development --watch"
+  },
+  "author": {
+    "name": "groupher team",
+    "email": "support@coderplanets.com"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^1.0.0",
+    "style-loader": "^0.21.0",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {}
+}
