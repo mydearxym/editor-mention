@@ -330,8 +330,8 @@ class Mention {
    */
   static get sanitize() {
     return {
-      mark: {
-        class: this.CSS.mention
+      mention: {
+        class: this.CSS && this.CSS.mention
       }
     };
   }

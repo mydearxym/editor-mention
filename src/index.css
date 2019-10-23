@@ -2,6 +2,23 @@
   color: #1785a9;
   font-weight: bold;
 }
+.cdx-mention::before {
+  content: 'a';
+  background: #1785a9;
+  color: white;
+  width: 14px;
+  height: 14px;
+  margin-right: 2px;
+  border-radius: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transform: rotateZ(20deg);
+  padding-bottom: 2px;
+  font-family: serif;
+  font-weight: bolder;
+}
 .cdx-mention__container {
   padding: 5px;
   padding-bottom: 0px;
